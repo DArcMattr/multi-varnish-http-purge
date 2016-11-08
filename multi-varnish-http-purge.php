@@ -433,3 +433,4 @@ $purger = new VarnishPurger();
 // WP-CLI
 if ( defined('WP_CLI') && WP_CLI ) {
 	include( 'wp-cli.php' );
+}
