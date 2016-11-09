@@ -124,8 +124,6 @@ add the following to your wp-config.php file:
 
 Replace "123.45.67.89" and "266.600.33.1" with the IP addresses of your <em>Varnish Servers</em> (not CloudFlare, Varnish). <em>DO NOT</em> put in http in this define, you can list as many Varnish Servers as you have in this way.
 
-you cannot use `wp option add` or `wp option update` to set more than one vhp_varnish_ip
-
 = How do I find my Varnish IP? =
 
 Your Varnish IP must be one of the IPs that Varnish is listening on. If you use multiple IPs, or if you've customized your ACLs, you'll need to pick on that doesn't conflict with your other settings. For example, if you have Varnish listening on a public and private IP, you'll want to pick the private. On the other hand, if you told Varnish to listen on 0.0.0.0 (i.e. "listen on every interface you can") you would need to check what IP you set your purge ACL to allow (commonly 127.0.0.1 aka localhost), and use that (i.e. 127.0.0.1).

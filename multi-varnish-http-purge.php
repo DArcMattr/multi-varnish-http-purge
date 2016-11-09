@@ -293,8 +293,8 @@ class VarnishPurger {
 			$host = $p['host'];
 		}
 
-		// XXX multi IPs here
-		$varnishArray = explode( ',', $varniship );
+		// XXX Multi IPs changes here
+		$varnishArray = array_map( 'trim', explode( ',', $varniship ) );
 
 		foreach ( $varnishArray as $host ) {
 			$purgeme = $schema.$host.$path.$pregex;
