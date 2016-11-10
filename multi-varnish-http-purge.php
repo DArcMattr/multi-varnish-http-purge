@@ -19,15 +19,14 @@ modified purge_url($url) to reflect use of define('VHP_VARNISH_IP','123.45.67.89
 or `wp site option update vhp_varnish_ip '123.45.67.89,169.123.80.80,...'`
 this lets you define a string of comma separated ip-address to be purged
 
-	This file is part of Multi-Varnish HTTP Purge, a plugin for WordPress.
+This file is part of Multi-Varnish HTTP Purge, a plugin for WordPress.
 
-	Multi-Varnish HTTP Purge is free software: you can redistribute it and/or modify
-	it under the terms of the Apache License 2.0 license.
+Multi-Varnish HTTP Purge is free software: you can redistribute it and/or modify
+it under the terms of the Apache License 2.0 license.
 
-	Multi-Varnish HTTP Purge is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
+Multi-Varnish HTTP Purge is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 */
 
 /**
