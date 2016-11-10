@@ -336,7 +336,6 @@ class VarnishPurger {
 
 			// Cleanup CURL functions to be wp_remote_request and thus better
 			// http://wordpress.org/support/topic/incompatability-with-editorial-calendar-plugin
-			error_log( __FUNCTION__ . ' ' . get_site_option( 'vhp_varnish_ip' ) . ' ' . $purgeme . ' ' . print_r( $p, true ) );
 			$response = wp_remote_request( $purgeme, array( 'method' => 'PURGE', 'headers' => array( 'host' => $host, 'X-Purge-Method' => $varnish_x_purgemethod ) ) );
 			do_action( 'after_purge_url', $url, $purgeme, $response );
 		}
