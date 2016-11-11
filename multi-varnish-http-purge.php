@@ -311,7 +311,6 @@ class VarnishPurger {
 		 * varnish_http_purge_schema()
 		 *
 		 * @since 3.7.3
-		 *
 		 */
 
 		$schema = apply_filters( 'varnish_http_purge_schema', 'http://' );
@@ -319,13 +318,11 @@ class VarnishPurger {
 		// XXX Multi IPs changes begin.
 
 		// If we made varniship, let it sail
-		if ( isset( $varniship ) && '' !== $varniship ) {
-			$host = $varniship;
-		} else {
-			$varniship = $host = $p['host'];
-		}
+		$varniship = ( isset( $varniship ) && '' !== $varniship ) ?
+			$varniship :
+			$p['host'];
 
-		$varnish_array = array_map( 'trim', explode( ',', $host ) );
+		$varnish_array = array_map( 'trim', explode( ',', $varniship ) );
 
 		foreach ( $varnish_array as $host ) {
 			$purgeme = $schema . $host . $path . $pregex;
@@ -336,7 +333,16 @@ class VarnishPurger {
 
 			// Cleanup CURL functions to be wp_remote_request and thus better
 			// http://wordpress.org/support/topic/incompatability-with-editorial-calendar-plugin
-			$response = wp_remote_request( $purgeme, array( 'method' => 'PURGE', 'headers' => array( 'host' => $host, 'X-Purge-Method' => $varnish_x_purgemethod ) ) );
+			$response = wp_remote_request(
+				$purgeme,
+				array(
+					'method' => 'PURGE',
+					'headers' => array(
+						'host' => $p['host'],
+						'X-Purge-Method' => $varnish_x_purgemethod,
+					),
+				)
+			);
 			do_action( 'after_purge_url', $url, $purgeme, $response );
 		}
 		// XXX Multi IPs changes end.
