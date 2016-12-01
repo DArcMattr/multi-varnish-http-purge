@@ -61,7 +61,7 @@ class VarnishPurger {
 
 		// Warning: No Pretty Permalinks!
 		if ( '' == get_option( 'permalink_structure' ) && current_user_can( 'manage_options' ) ) {
-			add_action( 'admin_notices' , array( $this, 'pretty_permalinks_message'));
+			add_action( 'admin_notices' , array( $this, 'pretty_permalinks_message' ) );
 			return;
 		}
 
@@ -92,7 +92,7 @@ class VarnishPurger {
 		// Success: Admin notice when purging
 		if (
 			isset( $_GET['vhp_flush_all'] ) &&
-			check_admin_referer( 'varnish-http-purge' )
+			check_admin_referer( 'vhp-flush-all' )
 		) {
 			add_action( 'admin_notices', array( $this, 'purge_message' ) );
 		}
@@ -163,7 +163,7 @@ class VarnishPurger {
 	 *
 	 * @since 4.0
 	 */
-	static public function the_home_url(){
+	static public function the_home_url() {
 		$home_url = apply_filters( 'vhp_home_url', home_url() );
 		return $home_url;
 	}
@@ -179,7 +179,7 @@ class VarnishPurger {
 		$admin_bar->add_menu( array(
 			'id'	=> 'purge-varnish-cache-all',
 			'title' => __( 'Purge Varnish', 'varnish-http-purge' ),
-			'href'  => wp_nonce_url( add_query_arg( 'vhp_flush_all', 1 ), 'varnish-http-purge' ),
+			'href'  => wp_nonce_url( add_query_arg( 'vhp_flush_all', 1 ), 'vhp-flush-all' ),
 			'meta'  => array(
 				'title' => __( 'Purge Varnish', 'varnish-http-purge' ),
 			),
@@ -200,7 +200,7 @@ class VarnishPurger {
 			$admin_bar->add_menu( array(
 				'id'	=> 'purge-varnish-cache-page',
 				'title' => __( 'Purge Varnish for this Page', 'varnish-http-purge' ),
-				'href'  => wp_nonce_url( add_query_arg( 'vhp_flush_page', $wp->request . '/' ), 'varnish-http-purge' ),
+				'href'  => wp_nonce_url( add_query_arg( 'vhp_flush_page', $wp->request . '/' ), 'vhp-flush-all' ),
 				'meta'  => array(
 					'title' => __( 'Purge Varnish for Page', 'varnish-http-purge' ),
 				),
@@ -217,7 +217,7 @@ class VarnishPurger {
 	function varnish_rightnow() {
 		global $blog_id;
 
-		$url = wp_nonce_url( add_query_arg( 'vhp_flush_all' ), 'varnish-http-purge' );
+		$url = wp_nonce_url( add_query_arg( 'vhp_flush_all' ), 'vhp-flush-all' );
 
 		$intro = sprintf( __( '<a href="%1$s">Varnish HTTP Purge</a> automatically purges your posts when published or updated. Sometimes you need a manual flush.', 'varnish-http-purge' ), 'http://wordpress.org/plugins/varnish-http-purge/' );
 
@@ -310,16 +310,16 @@ class VarnishPurger {
 
 		if ( empty( $purge_urls ) ) {
 			if (
-				check_admin_referer( 'varnish-http-purge' )
+				isset( $_GET['vhp_flush_all'] ) &&
+				check_admin_referer( 'vhp-flush-all' )
 			) {
-				if (
-					isset( $_GET['vhp_flush_all'] )
-				) {
-					$this->purge_url( $this->the_home_url() . '/?vhp-regex' );
-				} elseif ( isset( $_GET['vhp_flush_page'] ) ) {
-					$url = esc_url( $this->the_home_url() . $_GET['vhp_flush_page'] );
-					$this->purge_url( $url );
-				}
+				$this->purge_url( $this->the_home_url() . '/?vhp-regex' );
+			} elseif (
+				isset( $_GET['vhp_flush_page'] ) &&
+				check_admin_referer( 'vhp-flush-all' )
+			) {
+				$url = esc_url( $this->the_home_url() . $_GET['vhp_flush_page'] );
+				$this->purge_url( $url );
 			}
 		} else {
 			foreach ( $purge_urls as $url ) {
@@ -337,7 +337,6 @@ class VarnishPurger {
 	 * @access public
 	 */
 	public function purge_url( $url ) {
-		error_log( __FUNCTION__ . ' ' . $url );
 		$p = parse_url( $url );
 
 		if ( isset( $p['query'] ) && ( 'vhp-regex' == $p['query'] ) ) {
@@ -505,8 +504,8 @@ class VarnishPurger {
 			array_push( $listofurls, $this->the_home_url() . '/' );
 			if ( get_option( 'show_on_front' ) == 'page' ) {
 				// Ensure we have a page_for_posts setting to avoid empty URL
-				if ( get_option('page_for_posts') ) {
-					array_push( $listofurls, get_permalink( get_option('page_for_posts') ) );
+				if ( get_option( 'page_for_posts' ) ) {
+					array_push( $listofurls, get_permalink( get_option( 'page_for_posts' ) ) );
 				}
 			}
 		} else {
@@ -538,3 +537,9 @@ $purger = new VarnishPurger();
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	include( 'wp-cli.php' );
 }
+
+/* Varnish Status Page
+ *
+ * @since 4.0
+ */
+include_once( 'varnish-status.php' );
