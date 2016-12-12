@@ -60,7 +60,10 @@ class VarnishPurger {
 		global $blog_id;
 
 		// Warning: No Pretty Permalinks!
-		if ( '' == get_option( 'permalink_structure' ) && current_user_can( 'manage_options' ) ) {
+		if (
+			'' == get_option( 'permalink_structure' ) &&
+			current_user_can( 'manage_options' )
+		) {
 			add_action( 'admin_notices' , array( $this, 'pretty_permalinks_message' ) );
 			return;
 		}
@@ -88,6 +91,19 @@ class VarnishPurger {
 		}
 
 		add_action( 'shutdown', array( $this, 'execute_purge' ) );
+
+		if (
+			isset( $_GET['vhp_flush_page'] ) &&
+			check_admin_referer( 'vhp-flush-all' )
+		) {
+			$url = esc_url( $this->the_home_url() . $_GET['vhp_flush_page'] );
+			$this->purge_url( $url );
+			add_action( 'template_redirect', function() {
+				global $wp;
+				$url = home_url( add_query_arg( array(), $wp->request ) );
+				wp_redirect( $url );
+			} );
+		}
 
 		// Success: Admin notice when purging
 		if (
@@ -314,12 +330,6 @@ class VarnishPurger {
 				check_admin_referer( 'vhp-flush-all' )
 			) {
 				$this->purge_url( $this->the_home_url() . '/?vhp-regex' );
-			} elseif (
-				isset( $_GET['vhp_flush_page'] ) &&
-				check_admin_referer( 'vhp-flush-all' )
-			) {
-				$url = esc_url( $this->the_home_url() . $_GET['vhp_flush_page'] );
-				$this->purge_url( $url );
 			}
 		} else {
 			foreach ( $purge_urls as $url ) {
