@@ -349,7 +349,7 @@ class VarnishPurger {
 	public function purge_url( $url ) {
 		$p = parse_url( $url );
 
-		if ( isset( $p['query'] ) && ( 'vhp-regex' == $p['query'] ) ) {
+		if ( isset( $p['query'] ) && ( 'vhp-regex' === $p['query'] ) ) {
 			$pregex = '.*';
 			$varnish_x_purgemethod = 'regex';
 		} else {
@@ -365,11 +365,8 @@ class VarnishPurger {
 		}
 		$varniship = apply_filters( 'vhp_varnish_ip', $varniship );
 
-		if ( isset( $p['path'] ) ) {
-			$path = $p['path'];
-		} else {
-			$path = '';
-		}
+		$p['path'] = isset( $p['path'] ) ? $p['path'] : '';
+		$p['host'] = isset( $p['host'] ) ? $p['host'] : 'localhost';
 
 		/**
 		 * Schema filter
@@ -392,7 +389,7 @@ class VarnishPurger {
 		$varnish_array = array_map( 'trim', explode( ',', $varniship ) );
 
 		foreach ( $varnish_array as $host ) {
-			$purgeme = $schema . $host . $path . $pregex;
+			$purgeme = $schema . $host . $p['path'] . $pregex;
 
 			if ( ! empty( $p['query'] ) && 'vhp-regex' != $p['query'] ) {
 				$purgeme .= "?{$p['query']}";
