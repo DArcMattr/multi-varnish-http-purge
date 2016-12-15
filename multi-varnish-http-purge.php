@@ -96,7 +96,7 @@ class VarnishPurger {
 			isset( $_GET['vhp_flush_page'] ) &&
 			check_admin_referer( 'vhp-flush-all' )
 		) {
-			$url = esc_url( $this->the_home_url() . $_GET['vhp_flush_page'] );
+			$url = esc_url( $this->the_home_url() . '/' . $_GET['vhp_flush_page'] );
 			$this->purge_url( $url );
 			add_action( 'template_redirect', function() {
 				global $wp;
